@@ -1,0 +1,38 @@
+/*  flex abbreviation eg. flex: 0 1 auto;
+    flex-grow: 0,
+    flex-shrink: 1,
+    flex-basis: auto
+*/
+
+boxrow{
+    display: flex;
+    flex-flow: row;
+}
+
+boxcol{
+    display: flex;
+    flex-flow: column;
+
+}
+
+boxrow.start, boxcol.start{
+    justify-content: flex-start;
+}
+
+boxrow.center, boxcol.center{
+    justify-content: center;
+}
+
+boxrow.vcenter, boxcol.vcenter{
+    align-items: center;
+}
+
+boxrow.stretch, boxcol.stretch{
+    align-items: stretch;
+    justify-content: space-evenly;
+}
+
+boxrow.wrap, boxcol.wrap{
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
