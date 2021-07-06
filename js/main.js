@@ -1,37 +1,16 @@
-
 //setting up firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const firestore = firebase.firestore();
 
-//fetching elements from DOM
-const keydisplay = document.getElementById('key');
-const keyinput = document.getElementById('keyinput');
 
-//positional data of 3D objects
-let campos = {
-    x: 0,
-    y: 0,
-    z: 0
-};
-let ppos = {
-    x: 0,
-    y: 0,
-    z: 0
-};
+
 
 // Handle onmessage events for the receiving channel.
 // These are the data messages sent by the sending channel.
-
-function handleReceiveMessage(event) {
-    console.log(event.data);
-}
-
-// Handle onmessage events for the receiving channel.
-// These are the data messages sent by the sending channel.
-
 function rtcreceive(event) {
+    console.log("receive");
     try {
         let data = JSON.parse(event.data);
         //console.log(data.rotation.x);
@@ -46,6 +25,9 @@ function rtcreceive(event) {
             cube.rotation.y = data.rotation.y;
             cube.rotation.z = data.rotation.z;
         }
+        if(data.velocity){
+            cube.vel = data.velocity;
+        }
     } catch (err) {
         console.log(event.data);
     }
@@ -55,67 +37,73 @@ function rtcreceive(event) {
 document.addEventListener('pointerlockchange', lockChangeAlert, false);
 document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 
-document.body.appendChild(renderer.domElement);
-renderer.domElement.onclick = function () {
-    renderer.domElement.requestPointerLock = renderer.domElement.requestPointerLock || renderer.domElement.mozRequestPointerLock;
-    renderer.domElement.requestPointerLock();
-};S
+document.body.appendChild(gfx.renderer.domElement);
+gfx.renderer.domElement.onclick = function () {
+    gfx.renderer.domElement.requestPointerLock = gfx.renderer.domElement.requestPointerLock || gfx.renderer.domElement.mozRequestPointerLock;
+    gfx.renderer.domElement.requestPointerLock();
+};
 
 function onWindowResize() {
     console.log("resize");
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    gfx.camera.aspect = window.innerWidth / window.innerHeight;
+    gfx.camera.updateProjectionMatrix();
+    gfx.renderer.setSize(window.innerWidth, window.innerHeight);
 }
 window.addEventListener('resize', onWindowResize, false);
 
 let camrotspd = 0.6;
 
 function mousemove(e) {
-    camera.rotation.y += -e.movementX / 100.0 * camrotspd;
-    camera.rotation.x += -e.movementY / 100.0 * camrotspd;
+    gfx.camera.rotation.y += -e.movementX / 100.0 * camrotspd;
+    gfx.camera.rotation.x += -e.movementY / 100.0 * camrotspd;
     rtcbroadcast();
 }
 
 function lockChangeAlert() {
-    if (document.pointerLockElement === renderer.domElement ||
-        document.mozPointerLockElement === renderer.domElement) {
+    if (document.pointerLockElement === gfx.renderer.domElement ||
+        document.mozPointerLockElement === gfx.renderer.domElement) {
         console.log('The pointer lock status is now locked');
         document.addEventListener("mousemove", mousemove, false);
-        document.onkeydown
     } else {
         console.log('The pointer lock status is now unlocked');
         document.removeEventListener("mousemove", mousemove, false);
     }
 }
 
-let camspd = 0.1;
+const geometry = new THREE.BoxGeometry(2, 2, 2);
+const material = new THREE.MeshBasicMaterial({
+    color: 0x00ff00
+});
+const cube = new THREE.Mesh(geometry, material);
+pushPhysObj(cube);
+
+let camspd = 10;
 let change = false;
 document.addEventListener('keydown', function (event) {
     change = true;
     switch (event.key) {
         case 'z': {
-            camera.vel.z = -camspd;
+            gfx.camera.vel.z = -camspd;
             break;
         }
         case 's': {
-            camera.vel.z = camspd;
+            gfx.camera.vel.z = camspd;
             break;
         }
         case 'd': {
-            camera.vel.x = camspd;
+            gfx.camera.vel.x = camspd;
             break;
         }
         case 'q': {
-            camera.vel.x = -camspd;
+            gfx.camera.vel.x = -camspd;
             break;
         }
         case 'r': {
-            camera.vel.y = camspd;
+            gfx.camera.vel.y = camspd;
             break;
         }
         case 'f': {
-            camera.vel.y = -camspd;
+            gfx.camera.vel.y = -camspd;
             break;
         }
     }
@@ -126,27 +114,27 @@ document.addEventListener('keyup', function (event) {
     change = false;
     switch (event.key) {
         case 'z': {
-            camera.vel.z = 0;
+            gfx.camera.vel.z = 0;
             break;
         }
         case 's': {
-            camera.vel.z = 0;
+            gfx.camera.vel.z = 0;
             break;
         }
         case 'd': {
-            camera.vel.x = 0;
+            gfx.camera.vel.x = 0;
             break;
         }
         case 'q': {
-            camera.vel.x = 0;
+            gfx.camera.vel.x = 0;
             break;
         }
         case 'r': {
-            camera.vel.y = 0;
+            gfx.camera.vel.y = 0;
             break;
         }
         case 'f': {
-            camera.vel.y = 0;
+            gfx.camera.vel.y = 0;
             break;
         }
     }
@@ -155,17 +143,19 @@ document.addEventListener('keyup', function (event) {
 
 function rtcbroadcast() {
     sendrot = {
-        x: camera.rotation.x,
-        y: camera.rotation.y,
-        z: camera.rotation.z
+        x: gfx.camera.rotation.x,
+        y: gfx.camera.rotation.y,
+        z: gfx.camera.rotation.z
     };
     console.log("broadcasting...");
     rtcsend({
-        position: camera.position,
-        rotation: sendrot
+        position: gfx.camera.position,
+        rotation: sendrot,
+        velocity: gfx.camera.vel
     });
 }
 
+//EXPERIMENTAL rtc broadcast loop
 let broadcastinterval = 400; //in ms
 function rtcbroadcastloop() {
     rtcbroadcast();
@@ -179,5 +169,6 @@ function init() {
     //start the drawing to the canvas
     //rtcbroadcastloop();
     animate();
-
 }
+
+init();
