@@ -14,6 +14,7 @@ gfx.camera.vel = {
     y: 0,
     z: 0
 };
+
 var physobjs = [];
 physobjs.push(gfx.camera);
 
@@ -21,9 +22,6 @@ gfx.renderer = new THREE.WebGLRenderer();
 gfx.renderer.setSize(window.innerWidth, window.innerHeight);
 
 //timing variables in milliseconds
-let t = 0; //global time variable
-let dt = 0; //difference in time since last update
-let ut = 0; //current unix epoch time
 let lut = 0; //last unix epoch time since last update
 
 function animate() {
@@ -48,9 +46,8 @@ function pushPhysObj(object){
 
 function physicsupdate() {
     //update timing variables
-    ut = new Date().getTime();
-    t += ut - lut;
-    dt = ut - lut;
+    let ut = new Date().getTime();
+    let dt = ut - lut; //difference in time since last update
     lut = ut;
     let dts = dt / 1000; //dt to seconds
 
