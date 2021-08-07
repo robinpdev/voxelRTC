@@ -15,6 +15,8 @@ gfx.camera.vel = {
     z: 0
 };
 
+
+
 var physobjs = [];
 physobjs.push(gfx.camera);
 
@@ -23,6 +25,14 @@ gfx.renderer.setSize(window.innerWidth, window.innerHeight);
 
 //timing variables in milliseconds
 let lut = 0; //last unix epoch time since last update
+
+  {
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    gfx.scene.add(light);
+  }
 
 function animate() {
     physicsupdate();
