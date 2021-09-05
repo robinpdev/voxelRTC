@@ -15,7 +15,25 @@ gfx.camera.vel = {
     z: 0
 };
 
+var textureloader = new THREE.TextureLoader();
+var dirtTexture = textureloader.load("./res/dirt.jpg");
 
+var blocks = []; //contains world info
+
+function addblock(x, y, z, type){
+    blocks[x] = [];
+    blocks[x][y] = [];
+    blocks[x][y][z] = new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        new THREE.MeshPhongMaterial({
+            color:0xffffff,
+            map:dirtTexture
+        })
+    );
+    blocks[x][y][z].position.set(x, y, z);
+    blocks[x][y][z].type = type;
+    gfx.scene.add(blocks[x][y][z]);
+}
 
 var physobjs = [];
 physobjs.push(gfx.camera);

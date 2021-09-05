@@ -7,6 +7,13 @@ const firestore = firebase.firestore();
 
 
 
+for(let x = -10; x <= 10; x++){
+    for(let z = -10; z <= 10; z++){
+        addblock(x, -1, z);
+    }
+}
+
+
 // Handle onmessage events for the receiving channel.
 // These are the data messages sent by the sending channel.
 function rtcreceive(event) {
@@ -142,24 +149,27 @@ document.addEventListener('keyup', function (event) {
 });
 
 function rtcbroadcast() {
-    sendrot = {
-        x: gfx.camera.rotation.x,
-        y: gfx.camera.rotation.y,
-        z: gfx.camera.rotation.z
-    };
-    console.log("broadcasting...");
-    rtcsend({
-        position: gfx.camera.position,
-        rotation: sendrot,
-        velocity: gfx.camera.vel
-    });
+    if(rtcOnline){
+
+        sendrot = {
+            x: gfx.camera.rotation.x,
+            y: gfx.camera.rotation.y,
+            z: gfx.camera.rotation.z
+        };
+        console.log("broadcasting...");
+        rtcsend({
+            position: gfx.camera.position,
+            rotation: sendrot,
+            velocity: gfx.camera.vel
+        });
+    }
 }
 
 //EXPERIMENTAL rtc broadcast loop
 let broadcastinterval = 400; //in ms
 function rtcbroadcastloop() {
     rtcbroadcast();
-    //setTimeout(rtcbroadcastloop, broadcastinterval);
+    setTimeout(rtcbroadcastloop, broadcastinterval);
 }
 
 function init() {

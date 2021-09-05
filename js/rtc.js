@@ -22,8 +22,10 @@ rtc.handleReceiveChannelStatusChange = function (event) {
     // when the channel's status changes.
 }
 
+let rtcOnline = false;
 rtc.receiveChannelCallback = function(event) {
     console.log("rccb");
+    rtcOnline = true;
     rtc.receiveChannel = event.channel;
     rtc.receiveChannel.onmessage = rtcreceive;
     rtc.receiveChannel.onopen = rtc.handleReceiveChannelStatusChange;
