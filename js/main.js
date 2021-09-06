@@ -7,8 +7,8 @@ const firestore = firebase.firestore();
 
 
 
-for(let x = -10; x <= 10; x++){
-    for(let z = -10; z <= 10; z++){
+for (let x = -10; x <= 10; x++) {
+    for (let z = -10; z <= 10; z++) {
         addblock(x, -1, z);
     }
 }
@@ -32,7 +32,7 @@ function rtcreceive(event) {
             cube.rotation.y = data.rotation.y;
             cube.rotation.z = data.rotation.z;
         }
-        if(data.velocity){
+        if (data.velocity) {
             cube.vel = data.velocity;
         }
     } catch (err) {
@@ -63,6 +63,7 @@ let camrotspd = 0.6;
 function mousemove(e) {
     gfx.camera.rotation.y += -e.movementX / 100.0 * camrotspd;
     gfx.camera.rotation.x += -e.movementY / 100.0 * camrotspd;
+    move();
     rtcbroadcast();
 }
 
@@ -86,25 +87,16 @@ pushPhysObj(cube);
 
 let camspd = 10;
 let change = false;
+let moveangle = 0;
+let keyspressed = [];
 document.addEventListener('keydown', function (event) {
     change = true;
+    keyspressed[event.key] = true;
+    if(event.repeat){
+        console.log("repeat");
+        return;
+    }
     switch (event.key) {
-        case 'z': {
-            gfx.camera.vel.z = -camspd;
-            break;
-        }
-        case 's': {
-            gfx.camera.vel.z = camspd;
-            break;
-        }
-        case 'd': {
-            gfx.camera.vel.x = camspd;
-            break;
-        }
-        case 'q': {
-            gfx.camera.vel.x = -camspd;
-            break;
-        }
         case 'r': {
             gfx.camera.vel.y = camspd;
             break;
@@ -114,28 +106,57 @@ document.addEventListener('keydown', function (event) {
             break;
         }
     }
+    keymove();
+    
+
     rtcbroadcast();
 });
 
+function keymove(){
+    if(keyspressed['z'] && (keyspressed['q'] == keyspressed['d']) && !keyspressed['s']){
+        moveangle = 0;
+        console.log('vooruit')
+    }else if(keyspressed['z'] && keyspressed['d'] && !keyspressed['s'] && !keyspressed['q']){
+        moveangle = -3.14 / 8;
+        console.log('vrechts');
+    }
+    else if(keyspressed['d'] && !keyspressed['q']){
+        moveangle = -3.14 / 2;
+        console.log('1')
+
+    }else if(keyspressed['q'] && !keyspressed['d']){
+        moveangle = 3.14 / 2;
+        console.log('1')
+
+    }else if(keyspressed['s']){
+        moveangle = 3.14;
+        console.log('1')
+
+    }else{
+        gfx.camera.vel.x = 0;
+        gfx.camera.vel.z = 0;
+        console.log('off');
+        return;
+    }
+    move();
+}
+
+function move() {
+    if(keyspressed['z'] || keyspressed['q'] || keyspressed['s'] || keyspressed['d']){
+        gfx.camera.vel.z = -camspd * Math.cos(gfx.camera.rotation.y + moveangle);
+        gfx.camera.vel.x = -camspd * Math.sin(gfx.camera.rotation.y + moveangle);
+    }
+}
+
 document.addEventListener('keyup', function (event) {
     change = false;
+    keyspressed[event.key] = false;
+    if(event.repeat){
+        console.log("repeat");
+        return;
+    }
     switch (event.key) {
-        case 'z': {
-            gfx.camera.vel.z = 0;
-            break;
-        }
-        case 's': {
-            gfx.camera.vel.z = 0;
-            break;
-        }
-        case 'd': {
-            gfx.camera.vel.x = 0;
-            break;
-        }
-        case 'q': {
-            gfx.camera.vel.x = 0;
-            break;
-        }
+        
         case 'r': {
             gfx.camera.vel.y = 0;
             break;
@@ -145,11 +166,12 @@ document.addEventListener('keyup', function (event) {
             break;
         }
     }
+    keymove();
     rtcbroadcast();
 });
 
 function rtcbroadcast() {
-    if(rtcOnline){
+    if (rtcOnline) {
 
         sendrot = {
             x: gfx.camera.rotation.x,
