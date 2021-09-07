@@ -9,9 +9,13 @@ const firestore = firebase.firestore();
 
 for (let x = -10; x <= 10; x++) {
     for (let z = -10; z <= 10; z++) {
-        addblock(x, -1, z);
+        addblock(x, -1, z, "dirt");
     }
 }
+addblock(2,0,2, "dirt");
+addblock(3,0,2, "dirt");
+addblock(2,0,3, "dirt");
+addblock(2,1,2, "dirt");
 
 
 // Handle onmessage events for the receiving channel.

@@ -21,13 +21,21 @@ var dirtTexture = textureloader.load("./res/dirt.jpg");
 var blocks = []; //contains world info
 
 function addblock(x, y, z, type){
-    blocks[x] = [];
-    blocks[x][y] = [];
+    var texture;
+    if(type == "dirt"){
+        texture = dirtTexture;
+    }
+    if(blocks[x] == undefined){
+        blocks[x] = [];
+    }
+    if(blocks[x][y] == undefined){
+        blocks[x][y] = [];
+    }
     blocks[x][y][z] = new THREE.Mesh(
         new THREE.BoxGeometry(1,1,1),
         new THREE.MeshPhongMaterial({
             color:0xffffff,
-            map:dirtTexture
+            map:texture
         })
     );
     blocks[x][y][z].position.set(x, y, z);
