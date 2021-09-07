@@ -113,17 +113,20 @@ document.addEventListener('keydown', function (event) {
 });
 
 function keymove(){
-    if(keyspressed['z'] && (keyspressed['q'] == keyspressed['d']) && !keyspressed['s']){
+    moveangle = 0;
+    /*if(keyspressed['z'] && (keyspressed['q'] == keyspressed['d']) && !keyspressed['s']){
         moveangle = 0;
         console.log('vooruit')
     }else if(keyspressed['z'] && keyspressed['d'] && !keyspressed['s'] && !keyspressed['q']){
-        moveangle = -3.14 / 8;
+        moveangle = -3.14 / 4;
         console.log('vrechts');
+    }else if(keyspressed['z'] && keyspressed['q'] && !keyspressed['s'] && !keyspressed['d']){
+        moveangle = 3.14 / 4;
+        console.log('vlinks');
     }
     else if(keyspressed['d'] && !keyspressed['q']){
         moveangle = -3.14 / 2;
         console.log('1')
-
     }else if(keyspressed['q'] && !keyspressed['d']){
         moveangle = 3.14 / 2;
         console.log('1')
@@ -131,8 +134,32 @@ function keymove(){
     }else if(keyspressed['s']){
         moveangle = 3.14;
         console.log('1')
+*/
+    if(keyspressed['z']){
 
-    }else{
+    }
+    if(keyspressed['d']){
+        if(keyspressed['z'] && !keyspressed['s']){
+            moveangle -= 3.14 / 4;
+        }else if(keyspressed['s'] && !keyspressed['z']){
+            moveangle += 3.14 / 4;
+        }else{
+            moveangle -= 3.14 / 2;
+        }
+    }
+    if(keyspressed['q']){
+        if(keyspressed['z'] && !keyspressed['s']){
+            moveangle += 3.14 / 4;
+        }else if(keyspressed['s'] && !keyspressed['z']){
+            moveangle -= 3.14 / 4;
+        }else{
+            moveangle += 3.14 / 2;
+        }
+    }
+    if(keyspressed['s']){
+        moveangle += 3.14;
+    }
+    if(!keyspressed['z'] && !keyspressed['q'] && !keyspressed['s'] && !keyspressed['d']){
         gfx.camera.vel.x = 0;
         gfx.camera.vel.z = 0;
         console.log('off');
