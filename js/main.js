@@ -64,9 +64,25 @@ window.addEventListener('resize', onWindowResize, false);
 
 let camrotspd = 0.6;
 
+let lookvector = {x: 0, y: 0, z: 0};
 function mousemove(e) {
     gfx.camera.rotation.y += -e.movementX / 100.0 * camrotspd;
     gfx.camera.rotation.x += -e.movementY / 100.0 * camrotspd;
+    const positions = line.geometry.attributes.position.array;
+
+    positions[0] = gfx.camera.position.x + 0.01;
+    positions[1] = gfx.camera.position.y;
+    positions[2] = gfx.camera.position.z;
+
+    lookvector.x = - Math.cos(gfx.camera.rotation.x) * Math.sin(gfx.camera.rotation.y) * 1;
+    lookvector.y = Math.sin(gfx.camera.rotation.x) * 1;
+    lookvector.z = - Math.cos(gfx.camera.rotation.x) * Math.cos(gfx.camera.rotation.y) * 1;
+
+    positions[3] = gfx.camera.position.x + lookvector.x * 10;
+    positions[4] = gfx.camera.position.y + lookvector.y * 10;
+    positions[5] = gfx.camera.position.z + lookvector.z * 10;
+
+    line.geometry.attributes.position.needsUpdate = true;
     move();
     rtcbroadcast();
 }
