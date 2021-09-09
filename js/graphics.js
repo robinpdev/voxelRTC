@@ -96,3 +96,11 @@ function physicsupdate() {
 }
 
 ////////////////////////////////////////////////////////////////////
+const linematerial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+var points = [];
+points.push( new THREE.Vector3( - 10, 0, 0 ) );
+points.push( new THREE.Vector3( 0, 10, 0 ) );
+var linegeo = new THREE.BufferGeometry().setFromPoints( points );
+var line = new THREE.Line( linegeo, linematerial );
+
+gfx.scene.add( line );
