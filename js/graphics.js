@@ -17,6 +17,7 @@ gfx.camera.vel = {
 
 var textureloader = new THREE.TextureLoader();
 var dirtTexture = textureloader.load("./res/dirt.jpg");
+var selecttexture = textureloader.load("./res/select.jpg");
 
 var blocks = []; //contains world info
 
@@ -24,6 +25,8 @@ function addblock(x, y, z, type){
     var texture;
     if(type == "dirt"){
         texture = dirtTexture;
+    }else if(type == "select"){
+        texture = selecttexture;
     }
     if(blocks[x] == undefined){
         blocks[x] = [];
@@ -41,6 +44,17 @@ function addblock(x, y, z, type){
     blocks[x][y][z].position.set(x, y, z);
     blocks[x][y][z].type = type;
     gfx.scene.add(blocks[x][y][z]);
+}
+
+function updateblock(x,y,z,type){
+    if(type == "dirt"){
+        blocks[x][y][z].map = dirtTexture;
+    }else if(type="select"){
+        blocks[x][y][z].map = selecttexture;
+        blocks[x][y][z].material.needsUpdate = true;
+
+
+    }
 }
 
 var physobjs = [];

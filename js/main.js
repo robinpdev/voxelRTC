@@ -84,6 +84,7 @@ function mousemove(e) {
 
     line.geometry.attributes.position.needsUpdate = true;
     move();
+    getlookblock();
     rtcbroadcast();
 }
 
@@ -95,6 +96,39 @@ function lockChangeAlert() {
     } else {
         console.log('The pointer lock status is now unlocked');
         document.removeEventListener("mousemove", mousemove, false);
+    }
+}
+
+//raycast function to get the block the player is looking at
+function getlookblock(){
+    let searchpos = {};
+    searchpos.x = gfx.camera.position.x;
+    searchpos.y = gfx.camera.position.y;
+    searchpos.z = gfx.camera.position.z;
+    console.log(Math.floor(searchpos.x));
+    console.log(Math.floor(searchpos.y));
+    console.log(Math.floor(searchpos.z));
+
+    
+    for(let i = 0; i < 30; i++){
+        searchpos.x += lookvector.x * i * 1; //using 0.2 increment for testing, this should be tested and heightened later
+        searchpos.y += lookvector.y * i * 1;
+        searchpos.z += lookvector.z * i * 1;
+
+        console.log(Math.floor(searchpos.x));
+        console.log(Math.floor(searchpos.y));
+        console.log(Math.floor(searchpos.z));
+
+
+        if(blocks[Math.floor(searchpos.x + 0.5)] != undefined){
+            if(blocks[Math.floor(searchpos.x + 0.5)][Math.floor(searchpos.y + 0.5)] != undefined){
+                if(blocks[Math.floor(searchpos.x + 0.5)][Math.floor(searchpos.y + 0.5)][Math.floor(searchpos.z + 0.5)] != undefined){
+                    console.log("block found");
+                    addblock(Math.floor(searchpos.x + 0.5), Math.floor(searchpos.y + 0.5), Math.floor(searchpos.z + 0.5), "select");
+                    break;
+                }
+            }
+        }
     }
 }
 
